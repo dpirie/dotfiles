@@ -4,3 +4,7 @@
 defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
 defaults delete -g ApplePressAndHoldEnabled || true
 {{ end -}}
+
+{{ if eq .chezmoi.os "darwin" -}}
+sudo apt-get install -y fonts-inconsolata
+{{ end -}}
