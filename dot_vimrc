@@ -1,0 +1,366 @@
+"**************************************
+"       Interface
+" Book: Learn VimScript The Hard Way 
+"       http://learnvimscriptthehardway.stevelosh.com/
+" Gary Bernhart <sp?>
+
+    " Install / Update these with :PlugInstall
+    " :PlugInstall   |   Install plugins
+    " :PlugUpdate    |   Install or update plugins
+    " :PlugUpgrade   |   Upgrade vim-plug itself
+    
+    " https://github.com/junegunn/vim-plug
+call plug#begin()
+   Plug 'scrooloose/nerdtree'
+   Plug 'wincent/command-t'
+   Plug 'skammer/vim-css-color'
+   Plug 'rizzatti/dash.vim'
+   Plug 'altercation/vim-colors-solarized'
+   Plug 'nathanaelkane/vim-indent-guides'
+   Plug 'jistr/vim-nerdtree-tabs'
+   Plug 'tomtom/tlib_vim'               " Pre-req for SnipMate
+   Plug 'marcweber/vim-addon-mw-utils'  " Pre-req for SnipMate
+   Plug 'garbas/vim-snipmate'
+   Plug 'honza/vim-snippets'
+   Plug 'chase/vim-ansible-yaml'
+   Plug 'ervandew/supertab'
+   Plug 'godlygeek/tabular'
+   Plug 'neo4j-contrib/cypher-vim-syntax'
+   Plug 'tpope/vim-unimpaired'
+   Plug 'w0rp/ale'
+   Plug 'digitaltoad/vim-pug'
+call plug#end()
+
+" execute pathogen#infect()
+set nocompatible
+set background=dark
+syntax on
+set visualbell
+set t_Co=256
+colorscheme solarized
+
+set relativenumber   " Have line numbers be relative to current line
+set numberwidth=2    " Make line numbers be two chars wide
+set linebreak        " Wrap lines only at word boundaries
+set showbreak=>\     " Pre-pend "> " to wrapped lines
+let mapleader=','
+
+filetype plugin indent on        " load filetype plugins/indent settings
+set autochdir                    " always switch to the current file directory
+set backspace=indent,eol,start   " make backspace a more flexible
+
+set guitablabel=%N:\ %f\ %m
+
+autocmd vimenter * if !argc() | NERDTree | endif
+map <C-n> :NERDTreeToggle<CR>
+
+" https://github.com/nathanaelkane/vim-indent-guides/blob/master/doc/indent_guides.txt
+:nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
+
+let g:CommandTAcceptSelectionMap = '<C-t>'
+let g:CommandTAcceptSelectionTabMap = '<CR>'
+
+   " Edit/Source .vimrc
+nnoremap <leader>ev :tabe $MYVIMRC<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
+"
+   " Yank rest of line, like C and D$
+nnoremap Y y$
+
+autocmd BufRead,BufNewFile *.php set ft=php.html
+augroup vimscript
+   autocmd!
+   autocmd BufWritePost $MYVIMRC source $MYVIMRC
+   autocmd BufWritePost vimrc source $MYVIMRC
+augroup END
+
+augroup HTML
+   autocmd!
+"   autocmd BufRead,BufWritePre *.html :normal gg=G
+   autocmd FileType html nnoremap <buffer> <leader>c I<!-- <esc>A --><esc>
+augroup END
+
+augroup JavaScript
+   autocmd!
+   " autocmd BufRead,BufWritePre *.js :normal gg=G
+   " autocmd BufWritePre *.js %s/\s\+$//e
+   autocmd FileType javascript nnoremap <buffer> <leader>c gI// <esc>
+   autocmd FileType javascript vnoremap <buffer> <leader>c :normal gI// <esc>
+augroup END
+
+augroup pug 
+autocmd!
+"   autocmd BufRead,BufWritePre *.html :normal gg=G
+   autocmd FileType pug setlocal ts=2 sts=2 sw=2 expandtab
+augroup END
+
+augroup php 
+autocmd!
+"   autocmd BufRead,BufWritePre *.html :normal gg=G
+   autocmd FileType php nnoremap <buffer> <leader>l :!php -l %<cr>
+augroup END
+
+" brew install chrome-cli
+map <Leader>r :! reload.sh %:p<CR><CR>
+inoremap <Leader>r <esc>:w<CR>:! reload.sh %:p<CR><CR>
+
+" format the entire file
+nnoremap <leader>fef :normal! gg=G``<CR>
+
+" Strip Trailing Spaces
+nnoremap <silent> <leader>ts :let _s=@/ <Bar> :%s/\s\+$//e <Bar> :let @/=_s <Bar> :nohl <Bar> :unlet _s <CR>
+
+" upper/lower word
+nmap <leader>u mQviwU`Q
+nmap <leader>l mQviwu`Q
+
+" upper/lower first char of word
+nmap <leader>U mQgewvU`Q
+nmap <leader>L mQgewvu`Q
+
+" cd to the directory containing the file in the buffer
+nmap <silent> <leader>cd :lcd %:h<CR>
+
+" Create the directory containing the file in the buffer
+nmap <silent> <leader>md :!mkdir -p %:p:h<CR>
+
+" Some helpers to edit mode
+" http://vimcasts.org/e/14
+"nmap <leader>ew :e <C-R>=expand('%:h').'/'<cr>
+"nmap <leader>es :sp <C-R>=expand('%:h').'/'<cr>
+"nmap <leader>ev :vsp <C-R>=expand('%:h').'/'<cr>
+"nmap <leader>et :tabe <C-R>=expand('%:h').'/'<cr>
+
+nmap <silent> <leader>d <Plug>DashSearch
+
+let g:dash_map = {
+        \ 'ansible' : [ 'yaml' ]
+        \ }
+
+" Swap two words
+nmap <silent> gw :s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR>`'
+
+if exists(":Tabularize")
+   nmap <Leader>t= :Tabularize /=<CR>
+   vmap <Leader>t= :Tabularize /=<CR>
+   nmap <Leader>t: :Tabularize /:\zs<CR>
+   vmap <Leader>t: :Tabularize /:\zs<CR>
+endif
+
+if has("gui_macvim") && has("gui_running")
+   set guifont=InputMono\ Medium:h14
+   set lines=65 columns=175
+  " Map command-[ and command-] to indenting or outdenting
+  " while keeping the original selection in visual mode
+  vmap <D-]> >gv
+  vmap <D-[> <gv
+
+  nmap <D-]> >>
+  nmap <D-[> <<
+
+  omap <D-]> >>
+  omap <D-[> <<
+
+  imap <D-]> <Esc>>>i
+  imap <D-[> <Esc><<i
+
+  " Bubble single lines
+  nmap <D-Up> [e
+  nmap <D-Down> ]e
+  nmap <D-k> [e
+  nmap <D-j> ]e
+
+  " Bubble multiple lines
+  vmap <D-Up> [egv
+  vmap <D-Down> ]egv
+  vmap <D-k> [egv
+  vmap <D-j> ]egv
+
+  " Map Command-# to switch tabs
+  map  <D-0> 0gt
+  imap <D-0> <Esc>0gt
+  map  <D-1> 1gt
+  imap <D-1> <Esc>1gt
+  map  <D-2> 2gt
+  imap <D-2> <Esc>2gt
+  map  <D-3> 3gt
+  imap <D-3> <Esc>3gt
+  map  <D-4> 4gt
+  imap <D-4> <Esc>4gt
+  map  <D-5> 5gt
+  imap <D-5> <Esc>5gt
+  map  <D-6> 6gt
+  imap <D-6> <Esc>6gt
+  map  <D-7> 7gt
+  imap <D-7> <Esc>7gt
+  map  <D-8> 8gt
+  imap <D-8> <Esc>8gt
+  map  <D-9> 9gt
+  imap <D-9> <Esc>9gt
+else
+"  if exists("+lines")
+"    set lines=45
+"  endif
+"  if exists("+columns")
+"    set columns=160
+"  endif
+
+  " Map command-[ and command-] to indenting or outdenting
+  " while keeping the original selection in visual mode
+  vmap <A-]> >gv
+  vmap <A-[> <gv
+
+  nmap <A-]> >>
+  nmap <A-[> <<
+
+  omap <A-]> >>
+  omap <A-[> <<
+
+  imap <A-]> <Esc>>>i
+  imap <A-[> <Esc><<i
+ 
+  " Bubble single lines
+  nmap <C-Up> [e
+  nmap <C-Down> ]e
+  nmap <C-k> [e
+  nmap <C-j> ]e
+
+  " Bubble multiple lines
+  vmap <C-Up> [egv
+  vmap <C-Down> ]egv
+  vmap <C-k> [egv
+  vmap <C-j> ]egv
+
+  " Make shift-insert work like in Xterm
+  map <S-Insert> <MiddleMouse>
+  map! <S-Insert> <MiddleMouse>
+
+  " Map Control-# to switch tabs
+  map  <C-0> 0gt
+  imap <C-0> <Esc>0gt
+  map  <C-1> 1gt
+  imap <C-1> <Esc>1gt
+  map  <C-2> 2gt
+  imap <C-2> <Esc>2gt
+  map  <C-3> 3gt
+  imap <C-3> <Esc>3gt
+  map  <C-4> 4gt
+  imap <C-4> <Esc>4gt
+  map  <C-5> 5gt
+  imap <C-5> <Esc>5gt
+  map  <C-6> 6gt
+  imap <C-6> <Esc>6gt
+  map  <C-7> 7gt
+  imap <C-7> <Esc>7gt
+  map  <C-8> 8gt
+  imap <C-8> <Esc>8gt
+  map  <C-9> 9gt
+  imap <C-9> <Esc>9gt
+endif
+
+
+set backspace=indent,eol,start " make backspace more flexible
+
+      " Clear the search highlight
+nnoremap <leader><space> :noh<cr>
+
+set ignorecase       " case insensitive by default
+set hlsearch         " highlight searched for phrases
+set incsearch        " BUT do highlight as you type you search phrase
+set laststatus=2     " always show the status line
+set ruler            " Always show current positions along the bottom
+set scrolloff=10     " Keep 10 lines (top/bottom) for scope
+
+set statusline=%f\ %m\ %r\ %h\ %w\ [%L]\ [%{&ff}]\ %y\ [%p%%]\ [%04l,%04v]
+"              |  |  |  |  |   |    |       |   |      |    |
+"              |  |  |  |  |   |    |       |   |      |    + current column
+"              |  |  |  |  |   |    |       |   |      +-- current line
+"              |  |  |  |  |   |    |       |   +-- c rrent % into file
+"              |  |  |  |  |   |    |       +-- current syntax in square brackets
+"              |  |  |  |  |   |    +-- current fileformat
+"              |  |  |  |  |   +-- number of lines
+"              |  |  |  |  +-- preview flag in square brackets
+"              |  |  |  +-- help flag in square brackets
+"              |  |  +-- readonly flag in square brackets
+"              |  +-- modified flag in square brackets
+"              +-- relative path to file in the buffer
+
+
+"**************************************
+"       Indentation
+filetype indent on
+set smartindent
+
+set expandtab        " no real tabs please!
+set formatoptions=rq " Automatically insert comment leader on return,
+                     " and let gq format comments
+set shiftwidth=4     " auto-indent amount when using cindent,
+                     " >>, << and stuff like that
+set softtabstop=4    " when hitting tab or backspace, how many spaces
+                     " should a tab be (see expandtab)
+
+
+"**************************************
+"       Auto Commands
+
+"autocmd BufRead,BufWritePre *.html normal gg=G
+autocmd Filetype html nnoremap <buffer> <leader>c I<!-- <esc>A --><esc>
+autocmd Filetype php nnoremap  <buffer><leader>c I// <esc>
+"autocmd Filetype javascript nnoremap <buffer> <leader>c I// <esc>
+" autocmd FileType yaml setl indentkeys-=<:>
+"autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType yaml setlocal ts=3 sts=3 sw=3 expandtab 
+"autocmd FileType yaml IndentGuidesEnable
+"autocmd FileType yaml setlocal ts=3 sts=3 sw=3 expandtab 
+"autocmd FileType yaml IndentGuidesEnable
+autocmd FileType cucumber setlocal ts=2 sts=2 sw=2 expandtab
+
+
+"**************************************
+"       Auto Completion (Gary Bernhart)
+function! InsertTabWrapper()
+   let col = col(".") - 1
+      " No column 0
+   if !col || getline('.')[col - 1] !~ '\k'
+      return "\<tab>"
+   else
+      return "\<c-n>"
+endfunction
+
+"**************************************
+"       Auto Completion (Gary Bernhart)
+" For JavaScript files, use `eslint` (and only eslint)
+let g:ale_linters = {
+\ 'javascript': ['eslint'],
+\ }
+" Mappings in the style of unimpaired-next
+nmap <silent> [W <Plug>(ale_first)
+nmap <silent> [w <Plug>(ale_previous)
+nmap <silent> ]w <Plug>(ale_next)
+nmap <silent> ]W <Plug>(ale_last)
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+
+" nnoremap <Leader>l :ALELint<CR>
+let g:ale_lint_on_text_changed = 'never' 
+let g:ale_lint_on_save = 1 " default
+let g:ale_lint_on_enter = 1 " default
+let g:ale_lint_on_filetype_changed = 1 " default
+let g:ale_sign_column_always = 1
+
+
+      "Do we need this with SuperTab plugin?
+" inoremap <tab> <c-r>=InsertTabWrapper()<cr>
+" inoremap <s-tab> <c-p>
+
+" Append modeline after last line in buffer.
+" Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
+" files.
+function! AppendModeline()
+  let l:modeline = printf(" vim: set ts=%d sw=%d tw=%d %set :",
+        \ &tabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
+  let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+  call append(line("$"), l:modeline)
+endfunction
+nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
+

@@ -1,0 +1,51 @@
+#!/bin/sh
+
+# Exit if VS Code is not installed.
+which code > /dev/null || exit 0
+
+# Remove previsously-installed extensions.
+code --uninstall-extension DavidAnson.vscode-markdownlint
+code --uninstall-extension DevonDCarew.bazel-code
+
+{{ if eq .chezmoi.os "darwin" -}}
+# code --install-extension deerawan.vscode-dash
+{{ end -}}
+
+# Install desired extensions.
+xargs -L1 code --install-extension << EOF
+    aaron-bond.better-comments
+    alexkrechik.cucumberautocomplete
+    artdiniz.quitcontrol-vscode
+    bierner.emojisense
+    Braver.vscode-solarized
+    BriteSnow.vscode-toggle-quotes
+    CoenraadS.bracket-pair-colorizer-2
+    dbaeumer.vscode-eslint
+    deerawan.vscode-dash
+    donjayamanne.githistory
+    Equinusocio.vsc-community-material-theme
+    Equinusocio.vsc-material-theme
+    equinusocio.vsc-material-theme-icons
+    gerane.Theme-Solarized-light
+    ginfuru.ginfuru-better-solarized-dark-theme
+    HookyQR.beautify
+    jakeboone02.cypher-query-language
+    mauve.terraform
+    mrmlnc.vscode-json5
+    ms-azure-devops.azure-pipelines
+    ms-azuretools.vscode-azurefunctions
+    ms-azuretools.vscode-azureterraform
+    ms-azuretools.vscode-docker
+    ms-kubernetes-tools.vscode-kubernetes-tools
+    ms-vscode.azure-account
+    ms-vscode.azurecli
+    ms-vsliveshare.vsliveshare
+    phillipcao.debug-current
+    redhat.vscode-yaml
+    shd101wyy.markdown-preview-enhanced
+    vscode-icons-team.vscode-icons
+    vscodevim.vim
+    wesbos.theme-cobalt2
+    wix.vscode-import-cost
+    yzhang.markdown-all-in-one
+EOF

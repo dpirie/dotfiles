@@ -1,0 +1,53 @@
+{
+	// Place your snippets for javascript here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	"consoleLog": {
+		"prefix": "clg",
+		"body": "console.log(${1:object});",
+		"description": "Displays a message in the console"
+	},
+	"consoleLogJSONstringify": {
+		"prefix": "cjs",
+		"body": "console.log( JSON.stringify(${1:object},null,2));",
+		"description": "Displays a complex object in the console"
+	},
+	// Flow Control
+	"if statement": {
+		"prefix": "if",
+		"body": "if (${1:condition}) {\n\n\t${0}\n}",
+		"description": "if statement"
+	},
+	"if/else statement": {
+		"prefix": "ife",
+		"body": "if (${1:condition}) {\n\n\t${0}\n}\nelse {\n\n}",
+		"description": "if/else statement"
+	},
+	// Iterables
+	"forEach loop": {
+		"prefix": "for",
+		"body": "forEach((${1:i}) => {\n\n\t${0}\n});",
+		"description": "forEach loop"
+	},
+	"map": {
+		"prefix": "map",
+		"body": "map((${1:i}) => {\n\n\t${0}\n});",
+		"description": "map"
+	},
+	"reduce": {
+		"prefix": "red",
+		"body": "reduce((${2:obj}, ${3:cur}) => {\n\n\t${0}\n}${4:, initial});",
+		"description": "reduce"
+	},
+	"filter Inline": {
+		"prefix": "fil1",
+		"body": "filter(${1:item} => ${0});",
+		"description": "filter (inline)"
+	},
+	"filter Function": {
+		"prefix": "fil",
+		"body": "filter(${1:item} => {\n\n\t${0}\n});",
+		"description": "filter"
+	}
+}

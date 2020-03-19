@@ -1,0 +1,146 @@
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+############## Source a whole bunch of other files
+
+[[ -d "$HOME/.nvm" ]] && export NVM_DIR="$HOME/.nvm"
+for file in ~/.bash-colors \
+    $HOME/.bashrc-local \
+    /etc/bash_completion \
+    $(brew --prefix)/etc/bash_completion \
+    /usr/local/opt/nvm/nvm.sh \
+    /usr/local/opt/nvm/etc/bash_completion.d/nvm ; do
+        [[ -r "$file" ]] && . "$file"
+done
+unset file
+
+export PATH="$HOME/bin:$PATH"
+[[ -d $HOME/bin-local ]] && export PATH="$HOME/bin-local:$PATH"
+
+export LOGNAME
+if [[ -f /usr/bin/vim ]]; then
+   export EDITOR=/usr/bin/vim
+   export SVN_EDITOR=/usr/bin/vim
+else
+   export EDITOR=/usr/bin/vi
+   export SVN_EDITOR=/usr/bin/vi
+fi
+export PAGER=/usr/bin/less
+# Don’t clear the screen after quitting a manual page
+export MANPAGER="less -X"
+
+############## Shell Options
+
+set -o vi
+
+# Case-insensitive globbing (used in pathname expansion)
+shopt -s nocaseglob
+# Append to the Bash history file, rather than overwriting it
+shopt -s histappend
+# Autocorrect typos in path names when using `cd`
+shopt -s cdspell
+#set -o xtrace -o errexit # Debug
+set -o noclobber -o pipefail
+shopt -s nullglob
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+set +o noclobber +o nounset +o pipefail
+shopt -u nullglob
+
+for option in autocd globstar; do
+        shopt -s "$option" 2> /dev/null
+done
+
+############## Shell History
+
+# don't put duplicate lines in the history
+# don't save commands which start with a space
+HISTCONTROL=ignoredups:erasedups:ignorespace
+export HISTSIZE=100000
+export HISTFILESIZE=1000000
+export HISTIGNORE="&:[bf]g:exit:ls:cd:cd -:pwd:date:* --help:[1-9]"
+
+#PROMPT_COMMAND=`history -a`
+# Make sure all terminals save history
+# Checks that PROMPT_COMMAND is not read-only
+if unset PROMPT_COMMAND 2> /dev/null
+then
+    PROMPT_COMMAND="history -a; history -c; history -r; ${PROMPT_COMMAND-}"
+fi
+
+############## Bash Prompt
+
+color_enabled() {
+    local -i colors=$(tput colors 2>/dev/null)
+    [[ $? -eq 0 ]] && [[ $colors -gt 2 ]]
+}
+
+BOLD_FORMAT="${BOLD_FORMAT-$(color_enabled && tput bold)}"
+ERROR_FORMAT="${ERROR_FORMAT-$(color_enabled && tput setaf 1)}"
+WARNING_FORMAT="${WARNING_FORMAT-$(color_enabled && tput setaf 3)}"
+INFO_FORMAT="${INFO_FORMAT-$(color_enabled && tput setaf 4)}"
+RESET_FORMAT="${RESET_FORMAT-$(color_enabled && tput sgr0)}"
+
+# Exit code
+PS1='$(exit_code=$?; [[ $exit_code -eq 0 ]] || printf %s $BOLD_FORMAT $ERROR_FORMAT $exit_code $RESET_FORMAT " ")${BLUEbg}\u@'
+
+if [[ -n "${SSH_CONNECTION:-}" ]] ; then
+    PS1="$PS1"'\[$BOLD_FORMAT\]\[$WARNING_FORMAT\]\h\[$RESET_FORMAT\]'
+else
+    PS1="$PS1"'\h'
+fi
+
+PS1="$PS1${RESET}  "
+
+PS1="$PS1"'\[$BOLD_FORMAT\]\[$INFO_FORMAT\]'
+PS1="$PS1"'\w'
+PS1="$PS1"'\[$RESET_FORMAT\]'
+
+case "$TERM" in
+    xterm*|rxvt*|Eterm|aterm|kterm|gnome*)
+        PS1="$PS1"'\[\033]0;\u@\h:\w\007\]'
+        ;;
+    screen)
+        PS1="$PS1"'\[\033_\u@\h:\w\033\\\'
+        ;;
+esac
+
+function prompt_callback {
+    #local PS1="\u@\h: $(gp_truncate_pwd)"
+    local PS1="\u@\h:\w"
+    gp_set_window_title "$PS1"
+}
+
+PS1="$PS1\n\$ "
+export PS1
+
+# This needs to be after PS1 is set.
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+############## Colorized ls
+
+# Detect which `ls` flavor is in use
+if ls --color > /dev/null 2>&1; then # GNU `ls`
+        colorflag="--color"
+else # OS X `ls`
+        colorflag="-G"
+fi
+
+# Always use color output for `ls`
+alias ls="command ls ${colorflag}"
+export LS_COLORS='no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.ogg=01;35:*.mp3=01;35:*.wav=01;35:'
+
+############## Aliases
+
+alias dcd="docker-compose down"
+alias darkmode="it2setcolor preset 'Solarized Dark'"
+
+# Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
+[ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2 | tr ' ' '\n')" scp sftp ssh
+
+if [ -d /Applications/Docker.app/Contents/Resources/etc ]; then
+    for file in /Applications/Docker.app/Contents/Resources/etc/*bash* ; do
+        . $file
+    done
+fi

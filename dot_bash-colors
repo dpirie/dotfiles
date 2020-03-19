@@ -1,0 +1,52 @@
+#if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
+#        export TERM=gnome-256color
+#elif infocmp xterm-256color >/dev/null 2>&1; then
+#        export TERM=xterm-256color
+#fi
+
+if tput setaf 1 &> /dev/null; then
+        tput sgr0
+        if [[ $(tput colors) -ge 256 ]] 2>/dev/null; then
+                RED=$(tput setaf 1)
+                GREEN=$(tput setaf 190)
+                YELLOW=$(tput setaf 3)
+                BLUE=$(tput setaf 172)
+                MAGENTA=$(tput setaf 5)
+                CYAN=$(tput setaf 6)
+                WHITE=$(tput setaf 7)
+        else
+                RED=$(tput setaf 1)
+                GREEN=$(tput setaf 2)
+                YELLOW=$(tput setaf 3)
+                BLUE=$(tput setaf 4)
+                MAGENTA=$(tput setaf 5)
+                CYAN=$(tput setaf 6)
+                WHITE=$(tput setaf 7)
+
+                REDbg=$(tput setab 1; tput setaf 7)
+                GREENbg=$(tput setab 2; tput setaf 7)
+                YELLOWbg=$(tput setab 3; tput setaf 0)
+                BLUEbg=$(tput setab 4; tput setaf 7)
+                MAGENTAbg=$(tput setab 5; tput setaf 7)
+                CYANbg=$(tput setab 6; tput setaf 0)
+                WHITEbg=$(tput setab 7; tput setaf 0)
+        fi
+        BOLD=$(tput bold)
+        RESET=$(tput sgr0)
+else
+        MAGENTA="\033[1;31m"
+        ORANGE="\033[1;33m"
+        GREEN="\033[1;32m"
+        PURPLE="\033[1;35m"
+        WHITE="\033[1;37m"
+        BOLD=""
+        RESET="\033[m"
+fi
+
+export MAGENTA
+export ORANGE
+export GREEN
+export PURPLE
+export WHITE
+export BOLD
+export RESET

@@ -1,0 +1,64 @@
+{
+    "workbench.colorTheme": "Braver's Solarized Light",
+    "editor.fontFamily": "Input Mono, Inconsolata, Consolas, Monaco, Menlo",
+    "vim.hlsearch": true,
+    "vim.leader": ",",
+    "vim.handleKeys": {
+        "<C-c>": false,
+        "<C-v>": false,
+        "<C-x>": false
+    },
+    "eslint.run": "onSave",
+    "terminal.external.osxExec": "iTerm.app",
+    "editor.wordWrap": "on",
+    "[yaml]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": true
+    },
+    "files.associations": {
+        "*.json": "json5",
+    },
+    "bracket-pair-colorizer-2.colors": [
+        "#dc322f",
+        "#d33682",
+        "#6c71c4",
+        "#268bd2",
+        "#2aa198",
+        "#859900",
+        "#cb4b16"
+    ],
+    "yaml.format.enable": true,
+    "[javascript]": {},
+    "window.zoomLevel": 0,
+    "editor.fontSize": 14,
+    "editor.minimap.renderCharacters": false,
+    "editor.minimap.maxColumn": 150,
+    "editor.minimap.showSlider": "always",
+    // "editor.renderWhitespace": "all",
+    "editor.cursorBlinking": "phase",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": true
+    },
+    "cucumberautocomplete.steps": [
+        "features/step-definitions/*.js"
+    ],
+    "cucumberautocomplete.syncfeatures": "features/*feature",
+    "cucumberautocomplete.strictGherkinCompletion": true,
+    "debug-current.file": "index",
+    "[json]": {
+        "editor.defaultFormatter": "HookyQR.beautify"
+    },
+    "[jade]": {
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true
+    },
+    "[markdown]": {
+        "editor.quickSuggestions": false
+    },
+    "editor.lineNumbers": "relative"
+}

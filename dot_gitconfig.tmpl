@@ -1,0 +1,71 @@
+[user]
+        email = "{{ .email }}"
+	name = "{{ .name }}"
+{{ if eq .chezmoi.os "darwin" -}}
+[credential]
+	helper = osxkeychain
+{{ end -}}
+[alias]
+        c = commit -am
+        up = pull
+        p = push
+	s = status
+        df = diff --color --color-words --abbrev
+        lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+        mr = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
+	p = !git push origin $(git rev-parse --abbrev-ref HEAD)
+	pll = !git pull origin $(git rev-parse --abbrev-ref HEAD)
+	d = difftool
+	ds = difftool --staged
+
+[color]
+        diff = auto
+        status = auto
+        branch = auto
+        interactive = auto
+        ui = true
+        pager = true
+[core]
+	excludesfile = {{ .chezmoi.homedir }}/.gitignore_global
+        attributesfile = ~/.gitattributes
+[color "branch"]
+        current = yellow reverse
+        local = yellow
+        remote = green
+[color "diff"]
+        meta = yellow bold
+        frag = magenta bold
+        old = red bold
+        new = green bold
+[color "status"]
+        added = yellow
+        changed = green
+        untracked = cyan
+[merge]
+        log = true
+[http]
+[push]
+	default = simple
+	followTags = true
+[http]
+[diff]
+	tool = opendiff
+[difftool "fmdiff"]
+	path = {{ .chezmoi.homedir }}/bin/fmdiff
+[difftool "opendiff"]
+	path = {{ .chezmoi.homedir }}/bin/fmdiff
+[difftool]
+	prompt = false
+[branch]
+	autosetuprebase = always
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path =
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[commit]
+	template = {{ .chezmoi.homedir }}/.gitmessage
+[rebase]
+	autoStash = true
+[pull]

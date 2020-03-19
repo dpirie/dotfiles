@@ -1,0 +1,14 @@
+########50 characters############################
+
+# feat: add hat wobble
+# 
+# ^--^ ^------------^
+# | |
+# | +-> Summary in present tense.
+# |
+# +-------> Type: chore, docs, feat, fix, refactor, style, or test.
+
+########72 characters##################################################
+# Problem, Task, Reason for Commit
+# Solution or List of Changes
+# Special instructions, testing steps, rake, etc
