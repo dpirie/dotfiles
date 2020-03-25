@@ -9,7 +9,14 @@ It even lets you have different configurations between machines (work git config
 
 ## Installation:
 
+### Mac
 ```
 brew install twpayne/taps/chezmoi
+chezmoi init https://github.com/dpirie/dotfiles.git
+```
+
+### Linux (ubuntu)
+```
+sudo snap install chezmoi --classic
 chezmoi init https://github.com/dpirie/dotfiles.git
 ```
