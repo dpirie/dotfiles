@@ -20,3 +20,11 @@ chezmoi init https://github.com/dpirie/dotfiles.git
 sudo snap install chezmoi --classic
 chezmoi init https://github.com/dpirie/dotfiles.git
 ```
+
+### Vim Configuration
+1. Install Vim Plug:
+```
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+```
+2. Start Vim, you'll get warnings, then `:PlugInstall` to install all plugins.
